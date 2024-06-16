@@ -36,30 +36,36 @@ Edit the Apache Configuration File Open the default Apache configuration file or
 
     sudo vim /etc/apache2/sites-available/000-default.conf
 
-Add Proxy Configuration for /streamlit Path Add the following lines to the configuration file to set up the reverse proxy for the /streamlit path:
+Add Proxy Configuration for /stMoFEM Path 
 
-Define endpoint streamlit
-Define port 8501
+Add the following lines to the configuration file to set up the reverse proxy for the /stMoFEM path:
 
-<VirtualHost *:80>
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html
+    Define endpoint stMoFEM
+    Define port 8501
 
-    # Proxy settings for /${endpoint}
-    ProxyPreserveHost On
-    ProxyPass /${endpoint} http://localhost:${port}/
-    ProxyPassReverse /${endpoint} http://localhost:${port}/
+    <VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html
 
-    # WebSocket proxy settings for /${endpoint}
-    RewriteEngine on
-    RewriteCond %{HTTP:Upgrade} =websocket [NC]
-    RewriteRule /${endpoint}/(.*) ws://localhost:${port}/$1 [P,L]
-    RewriteCond %{HTTP:Upgrade} !=websocket [NC]
-    RewriteRule /${endpoint}/(.*) http://localhost:${port}/$1 [P,L]
+        # Redirect /${endpoint} to /${endpoint}/
+        RewriteEngine On
+        RewriteRule ^/${endpoint}$ /${endpoint}/ [R=301,L,NC]
 
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
+        # Proxy settings for /${endpoint}
+        ProxyPreserveHost On
+        ProxyPass /${endpoint} http://localhost:${port}/
+        ProxyPassReverse /${endpoint} http://localhost:${port}/
+
+        # WebSocket proxy settings for /${endpoint}
+        RewriteEngine on
+        RewriteCond %{HTTP:Upgrade} =websocket [NC]
+        RewriteRule /${endpoint}/(.*) ws://localhost:${port}/$1 [P,L]
+        RewriteCond %{HTTP:Upgrade} !=websocket [NC]
+        RewriteRule /${endpoint}/(.*) http://localhost:${port}/$1 [P,L]
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+    </VirtualHost>
 
 Restart Apache Restart the Apache service to apply the changes:
 
@@ -69,11 +75,11 @@ Restart Apache Restart the Apache service to apply the changes:
 Explanation
 
 ProxyPreserveHost On: This directive ensures that the original host header is passed to the backend server.
-ProxyPass and ProxyPassReverse: These directives forward HTTP requests from /streamlit to port 8501.
+ProxyPass and ProxyPassReverse: These directives forward HTTP requests from /stMoFEM to port 8501.
 RewriteEngine and RewriteRule: These directives handle WebSocket connections, which are necessary for Streamlit's interactive features.
 
 
 Verification
 
-After completing these steps, navigate to http://your-server-ip/streamlit in your browser. You should see your Streamlit app displayed.
-By configuring Apache as a reverse proxy for the /streamlit path, you can seamlessly forward requests from http://my-server-ip/streamlit to your Streamlit app running on port 8501 inside a Docker container.
+After completing these steps, navigate to http://your-server-ip/stMoFEM in your browser. You should see your Streamlit app displayed.
+By configuring Apache as a reverse proxy for the /stMoFEM path, you can seamlessly forward requests from http://my-server-ip/stMoFEM to your Streamlit app running on port 8501 inside a Docker container.

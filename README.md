@@ -1,6 +1,12 @@
 # stMoFEM
 A streamlit app to run a mofem simulation
 
+# MoFEM installation
+
+    docker pull likask/mofem-spack-jupyterhub:Workshop2023
+    
+    docker run -d --name workshop2023 -p 8000:8000 -p 2222:22 likask/mofem-spack-jupyterhub:Workshop2023
+
 # setup of the apache2 webserver on 1blu
 To configure Apache to serve your Streamlit app at http://my-server-ip/streamlit, you need to adjust the reverse proxy settings to handle the /streamlit path. Here’s how you can do it:
 Step-by-Step Guide

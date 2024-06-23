@@ -161,39 +161,39 @@ if __name__=="__main__":
                     try:
                         workDir.mkdir(parents=True, exist_ok=True)
                         database.updateById(data["id"],{"status":"Created workDir"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                         print("created workdir")
                     except:
                         data["status"] == "Failed"
                         database.updateById(data["id"],{"status":"Failed"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                 if data["status"] == "Created workDir":
                     if generate_config(data["params"], workDir):
                         database.updateById(data["id"],{"status":"Generated config"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                         print("Generated config")
                     else:
                         print("Failed generating config")
                         database.updateById(data["id"],{"status":"Failed"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                 if data["status"] == "Generated config":
                     if generate_mesh_box(data["params"], str(workDir.resolve())):
                         database.updateById(data["id"],{"status":"Generated mesh"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                         print("Generated mesh")
                     else:
                         data["status"] == "Failed"
                         database.updateById(data["id"],{"status":"Failed"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                 if data["status"] == "Generated mesh":
                     try:
                         run_mofem(data["params"], workDir)
                         database.updateById(data["id"],{"status":"Simulated"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                     except:
                         data["status"] == "Failed"
                         database.updateById(data["id"],{"status":"Failed"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
                 if data["status"] == "Simulated":
                     # convert results to vtk
                     try:
@@ -201,6 +201,6 @@ if __name__=="__main__":
                         database.updateById(data["id"],{"status":"Finished"})
                     except:
                         database.updateById(data["id"],{"status":"Failed"})
-                        data = database.find(data["id"])
+                        data = database.getById(data["id"])
         print("waiting for 10 s")
         sleep(10)

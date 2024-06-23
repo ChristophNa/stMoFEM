@@ -8,12 +8,14 @@ from stpyvista import stpyvista
 import extra_streamlit_components as stx
 # def setKey():
 #     st.session_state["key"] = {"key": "cantilever"}
-
+from pathlib import Path
 @st.cache_resource
 def getDB(path):
     return db.getDb(path)
 
-st.session_state["database"] = getDB("database.json")
+baseDir = Path("simulations/user/")
+baseDir.mkdir(parents=True, exist_ok=True)
+st.session_state["database"] = getDB(str((baseDir/"database.json").resolve()))
 
 if "params" not in st.session_state:
     st.session_state["params"] = {"length_x": 5.0,"length_y": 0.2,"length_z": 0.2,

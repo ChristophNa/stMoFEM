@@ -9,7 +9,7 @@ import extra_streamlit_components as stx
 # def setKey():
 #     st.session_state["key"] = {"key": "cantilever"}
 
-st.session_state["database"] = db.getDb("database.json")
+st.session_state["database"] = db.getDb("simulations/user/database.json")
 
 datas = st.session_state["database"].getAll()
 

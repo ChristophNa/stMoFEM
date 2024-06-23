@@ -2,10 +2,6 @@ FROM likask/mofem-spack-jupyterhub
 
 LABEL maintainer="Lukasz.Kaczmarczyk@glasgow.ac.uk"
 
-ENV MOFEM_JUPYTER_HOME_DIR=/mofem_install/jupyter
-
-ADD . $MOFEM_JUPYTER_HOME_DIR
-
 # Install packages
 RUN apt-get update && \
   apt-get install -y \
@@ -39,7 +35,7 @@ RUN cp -r ~/.spack /mofem_install/spack_config_dir && \
 WORKDIR $MOFEM_INSTALL_DIR
 
 # Define build argument for cache busting
-ARG CACHEBUST=1
+#ARG CACHEBUST=1
 
 RUN git clone https://github.com/ChristophNa/stMoFEM.git app/
 

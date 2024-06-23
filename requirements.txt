@@ -1,2 +1,6 @@
 streamlit
+extra_streamlit_components
+chardet
 stpyvista
+gmsh
+pysondb

@@ -1,7 +1,14 @@
 import streamlit as st
 
-st.title("Hello World")
+st.title("Test: File reader")
 
-data = st.data_editor({"name": "John", "age": 25})
+def readFile():
+    try:
+        with open("hello.txt", "r") as f:
+            return f.read()
+    except:
+        return "Could not read file"
 
-st.write(data)
+
+if st.button("refresh"):
+    st.write(readFile())

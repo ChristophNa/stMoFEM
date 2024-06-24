@@ -9,6 +9,7 @@ RUN apt-get update && \
   curl \
   software-properties-common \
   git \
+  python3 python3-pip \
   sudo && \
   rm -rf /var/lib/apt/lists/*
 
@@ -41,12 +42,22 @@ RUN git clone https://github.com/ChristophNa/stMoFEM.git app/
 
 RUN pip3 install -r app/requirements.txt
 
+
+RUN mkdir -p ~/.streamlit/ && echo "[general]"  > ~/.streamlit/credentials.toml && echo "email = \"\""  >> ~/.streamlit/credentials.toml
+
 EXPOSE 8501
 
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 # Copy the shell script into the container
-COPY start.sh app/start.sh
+# COPY start.sh app/start.sh
+
+
+# # Make the shell script executable
+# RUN chmod +x app/tests/start.sh
+
+# # Run the shell script
+# ENTRYPOINT ["app/tests/start.sh"]
 
 # Make the shell script executable
 RUN chmod +x app/start.sh

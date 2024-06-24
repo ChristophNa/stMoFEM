@@ -12,15 +12,19 @@ RUN apt-get update && \
   sudo && \
   rm -rf /var/lib/apt/lists/*
 
-RUN python3 --version
+ARG CACHEBUST=1
 
 RUN git clone https://github.com/ChristophNa/stMoFEM.git app/
 
 RUN pip3 install -r app/requirements.txt
 
-RUN ls app/
-
 EXPOSE 8501
+
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+
+# ENTRYPOINT ["streamlit", "run", "app/tests/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+
 
 # Make the shell script executable
 RUN chmod +x app/tests/start.sh

@@ -149,6 +149,8 @@ def run_mofem(exe, params, path):
 if __name__=="__main__":
     # set the base path
     basePath = Path("simulations")
+    basePath.mkdir(parents=True, exist_ok=True)
+
     
     while True:
         users = [item for item in basePath.iterdir() if item.is_dir()]

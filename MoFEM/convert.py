@@ -1,3 +1,4 @@
+from pathlib import Path
 import logging
 import sys
 import platform
@@ -19,29 +20,30 @@ def print_progress(iteration, total, decimals=1, bar_length=50):
     sys.stdout.flush()
 
 def is_not_h5m(file):
-    return not file.endswith('h5m')
+    return Path(file).suffix != '.h5m'
 
 def is_older_than_vtk(file):
-    file_vtk = path.splitext(file)[0] + ".vtk"
+    file_vtk = Path(file).with_suffix(".vtk")
     if path.exists(file_vtk):
         return path.getmtime(file) < path.getmtime(file_vtk)
     return False
 
 def mb_convert(file):
-    file = path.splitext(file)[0]
-    p = subprocess.Popen(["mbconvert", file + ".h5m", file + ".vtk"],
+    binPath = Path("um_view/bin/")
+    # file = path.splitext(file)[0]
+    p = subprocess.Popen([binPath/"mbconvert", Path(file).with_suffix(".h5m"), Path(file).with_suffix(".vtk")],
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (out, err) = p.communicate()
-    lock.acquire()
+    # lock.acquire()
     if p.returncode:
         logging.info('\n' + err.decode())
 
-def init(l):
-    global lock
-    lock = l
+# def init(l):
+#     global lock
+#     lock = l
 
 def convert(files, np, log_file):
-    logging.basicConfig(filename=log_file, level=logging.INFO)
+    # logging.basicConfig(filename=log_file, level=logging.INFO)
     # get all files 
     file_list = list(filterfalse(is_not_h5m, files))
     if not len(file_list):
@@ -52,12 +54,15 @@ def convert(files, np, log_file):
     if not len(file_list):
         logging.info("All found h5m files are older than corresponding vtk files")
         return
+    
+    for file in file_list:
+        mb_convert(file)
 
-    l = mp.Lock()
-    pool = mp.Pool(processes=np, initializer=init, initargs=(l,))
+    # l = mp.Lock()
+    # pool = mp.Pool(processes=np, initializer=init, initargs=(l,))
 
-    pool.map(mb_convert, file_list)
-    pool.close()
-    pool.join()
+    # pool.map(mb_convert, file_list)
+    # pool.close()
+    # pool.join()
 
     return

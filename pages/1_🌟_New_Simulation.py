@@ -6,12 +6,18 @@ import streamlit as st
 st.set_page_config(layout="wide")
 from stpyvista import stpyvista
 import extra_streamlit_components as stx
+# from streamlit_profiler import Profiler
 # def setKey():
 #     st.session_state["key"] = {"key": "cantilever"}
 from pathlib import Path
 @st.cache_resource
 def getDB(path):
     return db.getDb(path)
+# p = Profiler()
+# p.start()
+if not st.session_state.get("startedxvfb", False):
+    pv.start_xvfb()
+    st.session_state["startedxvfb"] = True
 
 baseDir = Path("simulations/user/")
 baseDir.mkdir(parents=True, exist_ok=True)
@@ -22,7 +28,7 @@ if "params" not in st.session_state:
                                   "element_size": 0.3, "meshDensity": "Medium", "show_mesh": True,
                                   "force_x": 0.,"force_y": -1.,"force_z": 0.,
                                   "material": "Steel",
-                                  "young_modulus": 210000.,"poisson_ratio": 0.3,
+                                  "young_modulus": 100.,"poisson_ratio": 0.0,
                                   "nproc": 2,"order": 2,
                                   "warp_field": "","warp_factor": 1,
                                   "formulation": "Mixed",
@@ -118,7 +124,7 @@ elif chosen_id == "Settings":
         st.session_state["params"][elem["key"]] = st.session_state[elem["key"]]
     
     if st.session_state["params"]["formulation"] == "Mixed":
-        elements = [{"key": "rotations", "Name": "Rotations", "args": [["small", "medium", "large"]], "widget": st.selectbox},
+        elements = [{"key": "rotations", "Name": "Rotations", "args": [["small", "moderate", "large"]], "widget": st.selectbox},
                     {"key": "stretches", "Name": "Stretches", "args": [["linear", "log"]], "widget": st.selectbox}]
         for elem in elements:
             if elem["key"] not in st.session_state:
@@ -136,9 +142,6 @@ elif chosen_id == "Settings":
     volume = st.session_state["params"]["length_x"] * st.session_state["params"]["length_y"] * st.session_state["params"]["length_z"]
     st.session_state["params"]["element_size"] = ((volume)/nElem[st.session_state["params"]["meshDensity"]]*6.0*sqrt(2.0))**(1/3)
     
-    
-
-        
     # TODO: create a run button that is deactivated after clicking
     if st.button("Run simulation"):
         # TODO: create pysondb entry
@@ -154,3 +157,4 @@ elif chosen_id == "Settings":
 # st.write(st.session_state.params)
 # if "tx" in st.session_state:
 #     st.write(st.session_state.tx)
+# p.stop()

@@ -10,8 +10,14 @@ RUN apt-get update && \
   software-properties-common \
   git \
   python3 python3-pip \
+  xvfb \
+  libxrender1 \
   sudo && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* 
+
+RUN export DISPLAY=:99.0 && \
+  export PYVISTA_OFF_SCREEN=true && \ 
+  Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & 
 
 # RUN useradd mofem \
 #   -m -d /mofem_install/jupyter/mofem \
@@ -36,9 +42,11 @@ RUN cp -r ~/.spack /mofem_install/spack_config_dir && \
 WORKDIR $MOFEM_INSTALL_DIR
 
 # Define build argument for cache busting
-#ARG CACHEBUST=1
+ARG CACHEBUST=1
 
 RUN git clone https://github.com/ChristophNa/stMoFEM.git app/
+
+# COPY . app/
 
 RUN pip3 install -r app/requirements.txt
 

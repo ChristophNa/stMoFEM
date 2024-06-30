@@ -24,6 +24,17 @@ def getSimulations(databasePath):
 def getDb(databasePath):
     return db.getDb(databasePath)
 
+if not st.session_state.get("startedxvfb", False):
+    pv.start_xvfb()
+    st.session_state["startedxvfb"] = True
+
+@st.cache_data()
+def getBaseDir():
+    baseDir = Path("simulations/user/")
+    baseDir.mkdir(parents=True, exist_ok=True)
+    return baseDir
+
+baseDir = getBaseDir()
 resultNames = getResultNames()
 database = getDb("simulations/user/database.json")
 simulations = getSimulations("simulations/user/database.json")
